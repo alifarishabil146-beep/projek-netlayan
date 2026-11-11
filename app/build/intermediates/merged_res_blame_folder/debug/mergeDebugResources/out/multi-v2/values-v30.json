@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.netlayan.app-mergeDebugResources-54:/values-v30/values-v30.xml",
+            "map": [
+                {
+                    "source": "D:\\AndroidGradleCache\\caches\\8.10.2\\transforms\\0a24abc0464cf2627680760e0ac6e23b\\transformed\\material3-release\\res\\values-v30\\values-v30.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "72",
+                        "endOffsets": "123"
+                    }
+                }
+            ]
+        }
+    ]
+}
