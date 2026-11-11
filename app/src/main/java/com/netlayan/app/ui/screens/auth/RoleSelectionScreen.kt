@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -85,7 +86,7 @@ fun RoleSelectionScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(36.dp))
+        Spacer(modifier = Modifier.height(28.dp))
 
         Text(
             text = "PILIH PERAN ANDA UNTUK MASUK",
@@ -103,7 +104,7 @@ fun RoleSelectionScreen(
             onClick = { onSelectRole(UserRole.NELAYAN) }
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         RoleOptionCard(
             title = "SAYA SEBAGAI PEMBELI / SWALAYAN",
@@ -112,6 +113,16 @@ fun RoleSelectionScreen(
             accentColor = SandyGold,
             onClick = { onSelectRole(UserRole.PEMBELI) }
         )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        RoleOptionCard(
+            title = "SAYA SEBAGAI KEMENTERIAN PERDAGANGAN",
+            description = "Pantau distribusi pangan, harga komoditas ikan, & laporan logistik kargo",
+            icon = Icons.Default.Storefront,
+            accentColor = Color(0xFF2A9D8F),
+            onClick = { onSelectRole(UserRole.KEMENTERIAN_PERDAGANGAN) }
+        )
     }
 }
 
@@ -119,7 +130,7 @@ fun RoleSelectionScreen(
 private fun RoleOptionCard(
     title: String,
     description: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     accentColor: Color,
     onClick: () -> Unit
 ) {
@@ -133,12 +144,12 @@ private fun RoleOptionCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp),
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(50.dp)
+                    .size(46.dp)
                     .clip(CircleShape)
                     .background(accentColor.copy(alpha = 0.2f)),
                 contentAlignment = Alignment.Center
@@ -147,7 +158,7 @@ private fun RoleOptionCard(
                     imageVector = icon,
                     contentDescription = null,
                     tint = accentColor,
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(24.dp)
                 )
             }
 
@@ -157,15 +168,15 @@ private fun RoleOptionCard(
                 Text(
                     text = title,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp,
+                    fontSize = 14.sp,
                     color = OceanBluePrimary
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = description,
-                    fontSize = 12.sp,
+                    fontSize = 11.sp,
                     color = Color.Gray,
-                    lineHeight = 16.sp
+                    lineHeight = 15.sp
                 )
             }
         }

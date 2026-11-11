@@ -23,9 +23,9 @@ import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.MonetizationOn
-import androidx.compose.material.icons.filled.PhonelinkRing
 import androidx.compose.material.icons.filled.Scale
 import androidx.compose.material.icons.filled.SetMeal
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -54,6 +54,27 @@ import com.netlayan.app.ui.components.NetlayanTopBar
 import com.netlayan.app.ui.theme.OceanBluePrimary
 import com.netlayan.app.ui.theme.OceanBlueSecondary
 import com.netlayan.app.viewmodel.NetlayanViewModel
+import java.text.NumberFormat
+import java.util.Locale
+
+// Sealed class hasil validasi harga standar nasional Kementerian Perdagangan
+sealed class PriceValidationResult {
+    object Valid : PriceValidationResult()
+    data class ExceedsLimit(val maxLimit: Double) : PriceValidationResult()
+    data class Invalid(val message: String) : PriceValidationResult()
+}
+
+/**
+ * Fungsi validasi harga ikan terhadap Batas Harga Standar Nasional
+ * dari Kementerian Perdagangan (Kemendag).
+ */
+fun validateFishPrice(pricePerKg: Double, maxAllowedPrice: Double = 150000.0): PriceValidationResult {
+    return when {
+        pricePerKg <= 0 -> PriceValidationResult.Invalid("Harga per kg harus lebih besar dari 0.")
+        pricePerKg > maxAllowedPrice -> PriceValidationResult.ExceedsLimit(maxAllowedPrice)
+        else -> PriceValidationResult.Valid
+    }
+}
 
 @Composable
 fun UploadFishScreen(
@@ -67,6 +88,10 @@ fun UploadFishScreen(
     var isInterCity by remember { mutableStateOf(true) }
     var description by remember { mutableStateOf("") }
     var selectedImageUrl by remember { mutableStateOf("https://images.unsplash.com/photo-1534483509719-3feaee7c30da?q=80&w=800") }
+
+    // State untuk AlertDialog Peringatan Harga Kemendag
+    var showPriceWarningDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -93,7 +118,6 @@ fun UploadFishScreen(
                     .background(Color.LightGray.copy(alpha = 0.3f))
                     .border(2.dp, OceanBluePrimary.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
                     .clickable {
-                        // Toggle sample image simulation
                         selectedImageUrl = if (selectedImageUrl.contains("photo-1534483509719")) {
                             "https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?q=80&w=800"
                         } else {
@@ -238,21 +262,39 @@ fun UploadFishScreen(
 
             Button(
                 onClick = {
-                    val name = fishName.ifBlank { "Ikan Tongkol Segar Padang" }
-                    val price = pricePerKgText.toDoubleOrNull() ?: 55000.0
-                    val stock = stockKgText.toDoubleOrNull() ?: 30.0
-                    val desc = description.ifBlank { "Tangkapan segar nelayan Padang pagi hari ini. Kualitas terjamin." }
+                    val price = pricePerKgText.toDoubleOrNull() ?: 0.0
 
-                    viewModel.addFishProduct(
-                        name = name,
-                        category = category,
-                        pricePerKg = price,
-                        stockKg = stock,
-                        imageUrl = selectedImageUrl,
-                        isInterCity = isInterCity,
-                        description = desc
-                    )
-                    onNavigateBack()
+                    // Validasi harga menggunakan fungsi validasi standar nasional Kemendag
+                    when (val validationResult = validateFishPrice(price)) {
+                        is PriceValidationResult.Valid -> {
+                            val name = fishName.ifBlank { "Ikan Tongkol Segar Padang" }
+                            val stock = stockKgText.toDoubleOrNull() ?: 30.0
+                            val desc = description.ifBlank { "Tangkapan segar nelayan Padang pagi hari ini. Kualitas terjamin." }
+
+                            viewModel.addFishProduct(
+                                name = name,
+                                category = category,
+                                pricePerKg = price,
+                                stockKg = stock,
+                                imageUrl = selectedImageUrl,
+                                isInterCity = isInterCity,
+                                description = desc
+                            )
+                            onNavigateBack()
+                        }
+                        is PriceValidationResult.ExceedsLimit -> {
+                            val formatter = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+                            val maxLimitStr = formatter.format(validationResult.maxLimit).replace(",00", "")
+                            val enteredStr = formatter.format(price).replace(",00", "")
+
+                            errorMessage = "Harga yang Anda masukkan ($enteredStr/kg) melebihi Batas Harga Standar Nasional dari Kementerian Perdagangan.\n\nBatas Maksimal yang ditetapkan adalah: $maxLimitStr/kg.\n\nMohon sesuaikan kembali harga tangkapan Anda."
+                            showPriceWarningDialog = true
+                        }
+                        is PriceValidationResult.Invalid -> {
+                            errorMessage = validationResult.message
+                            showPriceWarningDialog = true
+                        }
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -263,5 +305,30 @@ fun UploadFishScreen(
                 Text(text = "PUBLIKASIKAN TANGKAPAN", fontWeight = FontWeight.Bold, fontSize = 16.sp)
             }
         }
+    }
+
+    // AlertDialog Peringatan Harga Melebihi Standar Kemendag
+    if (showPriceWarningDialog) {
+        AlertDialog(
+            onDismissRequest = { showPriceWarningDialog = false },
+            title = {
+                Text(
+                    text = "Peringatan Standar Harga Kemendag",
+                    fontWeight = FontWeight.Bold,
+                    color = OceanBluePrimary
+                )
+            },
+            text = {
+                Text(text = errorMessage, fontSize = 14.sp)
+            },
+            confirmButton = {
+                Button(
+                    onClick = { showPriceWarningDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = OceanBluePrimary)
+                ) {
+                    Text("Mengerti & Perbaiki")
+                }
+            }
+        )
     }
 }

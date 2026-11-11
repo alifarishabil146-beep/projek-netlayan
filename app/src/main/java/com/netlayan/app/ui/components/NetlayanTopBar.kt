@@ -65,12 +65,20 @@ fun NetlayanTopBar(
                         modifier = Modifier
                             .clip(RoundedCornerShape(12.dp))
                             .background(
-                                if (userRole == UserRole.NELAYAN) OceanBlueSecondary else Color(0xFFF4A261)
+                                when (userRole) {
+                                    UserRole.NELAYAN -> OceanBlueSecondary
+                                    UserRole.PEMBELI -> Color(0xFFF4A261)
+                                    UserRole.KEMENTERIAN_PERDAGANGAN -> Color(0xFF2A9D8F)
+                                }
                             )
                             .padding(horizontal = 8.dp, vertical = 2.dp)
                     ) {
                         Text(
-                            text = if (userRole == UserRole.NELAYAN) "NELAYAN" else "PEMBELI",
+                            text = when (userRole) {
+                                UserRole.NELAYAN -> "NELAYAN"
+                                UserRole.PEMBELI -> "PEMBELI"
+                                UserRole.KEMENTERIAN_PERDAGANGAN -> "KEMENDAG"
+                            },
                             color = Color.White,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold
@@ -91,7 +99,7 @@ fun NetlayanTopBar(
             }
         },
         actions = {
-            if (userRole == UserRole.PEMBELI) {
+            if (userRole == UserRole.PEMBELI || userRole == UserRole.KEMENTERIAN_PERDAGANGAN) {
                 IconButton(onClick = onCartClick) {
                     BadgedBox(
                         badge = {

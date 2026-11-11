@@ -42,7 +42,15 @@ fun LoginScreen(
     onLoginSuccess: (UserRole) -> Unit,
     onNavigateRegister: (UserRole) -> Unit
 ) {
-    var email by remember { mutableStateOf(if (initialRole == UserRole.NELAYAN) "pakhrul@netlayan.com" else "swalayan@bintang.com") }
+    var email by remember {
+        mutableStateOf(
+            when (initialRole) {
+                UserRole.NELAYAN -> "pakhrul@netlayan.com"
+                UserRole.PEMBELI -> "swalayan@bintang.com"
+                UserRole.KEMENTERIAN_PERDAGANGAN -> "kemendag@ri.go.id"
+            }
+        )
+    }
     var password by remember { mutableStateOf("123456") }
     var selectedRole by remember { mutableStateOf(initialRole) }
 
@@ -73,7 +81,7 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(OceanBluePrimary.copy(alpha = 0.08f), shape = RoundedCornerShape(12.dp))
-                .padding(8.dp),
+                .padding(4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
@@ -87,7 +95,7 @@ fun LoginScreen(
                         email = "pakhrul@netlayan.com"
                     }
                 )
-                Text(text = "Nelayan", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                Text(text = "Nelayan", fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
             }
 
             Row(
@@ -101,7 +109,21 @@ fun LoginScreen(
                         email = "swalayan@bintang.com"
                     }
                 )
-                Text(text = "Pembeli / Swalayan", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                Text(text = "Pembeli", fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f)
+            ) {
+                RadioButton(
+                    selected = selectedRole == UserRole.KEMENTERIAN_PERDAGANGAN,
+                    onClick = {
+                        selectedRole = UserRole.KEMENTERIAN_PERDAGANGAN
+                        email = "kemendag@ri.go.id"
+                    }
+                )
+                Text(text = "Kemendag", fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
             }
         }
 

@@ -27,6 +27,14 @@ object MockData {
             phone = "082198765432",
             role = UserRole.PEMBELI,
             location = "Kota Bukittinggi"
+        ),
+        User(
+            id = "U003",
+            name = "Kementerian Perdagangan RI",
+            email = "kemendag@ri.go.id",
+            phone = "08111222333",
+            role = UserRole.KEMENTERIAN_PERDAGANGAN,
+            location = "Kantor Pusat / Perwakilan Padang"
         )
     )
 

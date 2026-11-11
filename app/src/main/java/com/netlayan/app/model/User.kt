@@ -2,7 +2,8 @@ package com.netlayan.app.model
 
 enum class UserRole {
     NELAYAN,
-    PEMBELI
+    PEMBELI,
+    KEMENTERIAN_PERDAGANGAN
 }
 
 data class User(

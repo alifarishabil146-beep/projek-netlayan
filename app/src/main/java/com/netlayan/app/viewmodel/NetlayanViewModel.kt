@@ -40,7 +40,11 @@ class NetlayanViewModel : ViewModel() {
     fun setCurrentUserRole(role: UserRole) {
         _currentUser.value = MockData.sampleUsers.find { it.role == role } ?: User(
             id = UUID.randomUUID().toString(),
-            name = if (role == UserRole.NELAYAN) "Nelayan Padang" else "Pembeli / Swalayan",
+            name = when (role) {
+                UserRole.NELAYAN -> "Nelayan Padang"
+                UserRole.PEMBELI -> "Pembeli / Swalayan"
+                UserRole.KEMENTERIAN_PERDAGANGAN -> "Kementerian Perdagangan"
+            },
             email = "user@netlayan.com",
             phone = "08123456789",
             role = role,
