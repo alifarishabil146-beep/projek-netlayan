@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import '../models/netlayan_models.dart';
 import '../providers/netlayan_store.dart';
-import 'cart_checkout_screen.dart';
+import '../theme/app_colors.dart';
+import '../utils/format_rupiah.dart';
+import '../widgets/cart_badge.dart';
+import '../widgets/product_card.dart';
+import 'cart_page.dart';
 import 'help_warranty_screen.dart';
 import 'order_tracking_screen.dart';
 import 'recipe_screen.dart';
@@ -23,6 +27,7 @@ class PembeliDashboard extends StatefulWidget {
 class _PembeliDashboardState extends State<PembeliDashboard> {
   String _selectedCategory = 'Semua';
   String _searchQuery = '';
+  String _sortBy = 'Terbaru'; // Pilihan sorting: Terbaru, Harga Terendah, Kesegaran Tertinggi, Rating Tertinggi
   int _tabIndex = 0;
 
   final List<String> _categories = [
@@ -35,6 +40,7 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
 
   void _showFishDetailModal(FishItem fish) {
     double selectedKg = 1.0;
+    final theme = Theme.of(context);
 
     showModalBottomSheet(
       context: context,
@@ -62,8 +68,8 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
                       fit: BoxFit.cover,
                       errorBuilder: (c, e, s) => Container(
                         height: 180,
-                        color: Colors.blue.shade50,
-                        child: const Icon(Icons.set_meal, size: 60, color: Color(0xFF005B96)),
+                        color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                        child: Icon(Icons.set_meal, size: 60, color: theme.colorScheme.primary),
                       ),
                     ),
                   ),
@@ -77,19 +83,19 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
                   Row(
                     children: [
                       Text(
-                        'Rp ${fish.pricePerKg.toStringAsFixed(0)} / Kg',
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF005B96)),
+                        '${formatRupiah(fish.pricePerKg)} / Kg',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
                       ),
                       const Spacer(),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFE0F7FA),
+                          color: AppColors.secondaryAqua.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           'Pelabuhan: ${fish.portLocation}',
-                          style: const TextStyle(fontSize: 12, color: Color(0xFF00A8CC), fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontSize: 12, color: AppColors.primaryOceanBlue, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
@@ -97,7 +103,7 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
                   const SizedBox(height: 12),
                   Text(
                     'Nelayan Penangkap: ${fish.fishermanName} (${fish.fishermanCity}) • ${fish.catchHoursAgo}',
-                    style: TextStyle(color: Colors.grey.shade700, fontWeight: FontWeight.w500),
+                    style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w500),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -110,28 +116,29 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.cyan.shade50,
+                      color: AppColors.secondaryAqua.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.cyan.shade200),
+                      border: Border.all(color: AppColors.secondaryAqua.withValues(alpha: 0.3)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.verified, color: Color(0xFF006064), size: 18),
+                            const Icon(Icons.verified, color: AppColors.primaryDarkDeepBlue, size: 18),
                             const SizedBox(width: 6),
                             Text(
                               'Stempel TPI: ${fish.qualityGrade}',
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF006064)),
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.primaryDarkDeepBlue),
                             ),
                           ],
                         ),
                         const SizedBox(height: 6),
-                        const Text('📜 Surat Jalan & Catch Certificate (Traceability):', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Color(0xFF00838F))),
+                        const Text('📜 Surat Jalan & Catch Certificate (Traceability):', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: AppColors.primaryOceanBlue)),
                         Text('• Nama Kapal: ${fish.vesselName}', style: const TextStyle(fontSize: 11)),
                         Text('• Zona Penangkapan: ${fish.fishingZone}', style: const TextStyle(fontSize: 11)),
                         Text('• Tanggal Bongkar Muat: ${fish.unloadingDate.day}/${fish.unloadingDate.month}/${fish.unloadingDate.year}', style: const TextStyle(fontSize: 11)),
+                        Text('• Estimasi Tiba: ${fish.estimatedArrival} • Ongkir: ${formatRupiah(fish.shippingCost)}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),
@@ -148,7 +155,7 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
                       Row(
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.remove_circle_outline, color: Color(0xFF005B96)),
+                            icon: Icon(Icons.remove_circle_outline, color: theme.colorScheme.primary),
                             onPressed: selectedKg > 1
                                 ? () {
                                     setModalState(() {
@@ -162,7 +169,7 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
                             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.add_circle_outline, color: Color(0xFF005B96)),
+                            icon: Icon(Icons.add_circle_outline, color: theme.colorScheme.primary),
                             onPressed: selectedKg < fish.stockKg
                                 ? () {
                                     setModalState(() {
@@ -185,15 +192,15 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
                           children: [
                             const Text('Subtotal Harga', style: TextStyle(fontSize: 12, color: Colors.grey)),
                             Text(
-                              'Rp ${totalPrice.toStringAsFixed(0)}',
-                              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF005B96)),
+                              formatRupiah(totalPrice),
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
                             ),
                           ],
                         ),
                       ),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF005B96),
+                          backgroundColor: theme.colorScheme.tertiary, // Coral CTA
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -203,8 +210,21 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
                           Navigator.pop(ctx);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('${fish.title} ($selectedKg Kg) ditambahkan ke keranjang!'),
-                              backgroundColor: const Color(0xFF005B96),
+                              content: Text('Ditambahkan ke keranjang (${fish.title})', style: const TextStyle(color: Colors.white)),
+                              backgroundColor: AppColors.textNavy,
+                              duration: const Duration(seconds: 3),
+                              action: SnackBarAction(
+                                label: 'LIHAT',
+                                textColor: AppColors.secondaryAqua,
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (ctx) => CartPage(store: widget.store),
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
                           );
                         },
@@ -225,6 +245,7 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
   @override
   Widget build(BuildContext context) {
     final user = widget.store.currentUser;
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -235,9 +256,10 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
             Text('Tujuan Pengiriman: ${user?.city ?? "Kota Bukittinggi"}', style: const TextStyle(fontSize: 12, color: Colors.white70)),
           ],
         ),
-        backgroundColor: const Color(0xFF005B96),
+        backgroundColor: theme.colorScheme.primary,
         foregroundColor: Colors.white,
         actions: [
+          CartBadge(store: widget.store),
           IconButton(
             icon: const Icon(Icons.help_outline),
             onPressed: () {
@@ -276,7 +298,7 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
             children: [
               if (cartCount > 0 && _tabIndex != 2)
                 Container(
-                  color: const Color(0xFF005B96),
+                  color: theme.colorScheme.primary,
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -286,34 +308,35 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
                         children: [
                           Text('$cartCount Item di Keranjang', style: const TextStyle(color: Colors.white70, fontSize: 12)),
                           Text(
-                            'Total: Rp ${widget.store.cartTotalPrice.toStringAsFixed(0)}',
+                            'Total: ${formatRupiah(widget.store.cartTotalPrice)}',
                             style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
                           ),
                         ],
                       ),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFF80AB),
-                          foregroundColor: Colors.black87,
+                          backgroundColor: Colors.white,
+                          foregroundColor: theme.colorScheme.primary,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (ctx) => CartCheckoutScreen(store: widget.store),
+                              builder: (ctx) => CartPage(store: widget.store),
                             ),
                           );
                         },
-                        icon: const Icon(Icons.shopping_bag),
-                        label: const Text('Checkout & Bayar', style: TextStyle(fontWeight: FontWeight.bold)),
+                        icon: Icon(Icons.shopping_bag, color: theme.colorScheme.primary),
+                        label: Text('Lihat Keranjang ($cartCount)', style: TextStyle(fontWeight: FontWeight.bold, color: theme.colorScheme.primary)),
                       )
                     ],
                   ),
                 ),
               BottomNavigationBar(
                 currentIndex: _tabIndex,
-                selectedItemColor: const Color(0xFF005B96),
+                selectedItemColor: theme.colorScheme.primary,
+                unselectedItemColor: AppColors.textSecondary,
                 onTap: (idx) {
                   setState(() {
                     _tabIndex = idx;
@@ -333,23 +356,35 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
   }
 
   Widget _buildCatalogView() {
+    final theme = Theme.of(context);
+
+    // Filter berdasarkan kategori dan pencarian
     List<FishItem> filtered = widget.store.fishList.where((fish) {
       bool matchesCategory = _selectedCategory == 'Semua' || fish.category == _selectedCategory;
       bool matchesSearch = _searchQuery.isEmpty || fish.title.toLowerCase().contains(_searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     }).toList();
 
+    // Sorting
+    if (_sortBy == 'Harga Terendah') {
+      filtered.sort((a, b) => a.pricePerKg.compareTo(b.pricePerKg));
+    } else if (_sortBy == 'Kesegaran Tertinggi') {
+      filtered.sort((a, b) => b.freshnessScore.compareTo(a.freshnessScore));
+    } else if (_sortBy == 'Rating Tertinggi') {
+      filtered.sort((a, b) => b.rating.compareTo(a.rating));
+    }
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Banner Pink Pengiriman Antar-Kota
+          // Banner Pengiriman Antar-Kota (Gradasi Primary -> Aqua)
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF005B96), Color(0xFF00A8CC)],
+              gradient: LinearGradient(
+                colors: [theme.colorScheme.primary, AppColors.secondaryAqua],
               ),
               borderRadius: BorderRadius.circular(16),
             ),
@@ -387,7 +422,7 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
             },
             decoration: InputDecoration(
               hintText: 'Cari jenis ikan segar (contoh: Kakap, Tongkol, Cumi)...',
-              prefixIcon: const Icon(Icons.search, color: Color(0xFF005B96)),
+              prefixIcon: Icon(Icons.search, color: theme.colorScheme.primary),
               filled: true,
               fillColor: Colors.white,
               border: OutlineInputBorder(
@@ -412,10 +447,11 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
                   child: ChoiceChip(
                     label: Text(cat),
                     selected: isSelected,
-                    selectedColor: const Color(0xFF005B96),
+                    selectedColor: theme.colorScheme.primary,
                     backgroundColor: Colors.white,
+                    side: BorderSide(color: theme.colorScheme.primary),
                     labelStyle: TextStyle(
-                      color: isSelected ? Colors.white : const Color(0xFF00A8CC),
+                      color: isSelected ? Colors.white : theme.colorScheme.primary,
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                     ),
                     onSelected: (selected) {
@@ -430,7 +466,48 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
               },
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
+
+          // Baris Header Daftar Ikan & Dropdown Sorting
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Katalog Ikan (${filtered.length})',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: theme.colorScheme.primary),
+              ),
+              PopupMenuButton<String>(
+                initialValue: _sortBy,
+                onSelected: (val) {
+                  setState(() {
+                    _sortBy = val;
+                  });
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(value: 'Terbaru', child: Text('Terbaru (Default)')),
+                  const PopupMenuItem(value: 'Harga Terendah', child: Text('Harga Terendah')),
+                  const PopupMenuItem(value: 'Kesegaran Tertinggi', child: Text('Kesegaran Tertinggi')),
+                  const PopupMenuItem(value: 'Rating Tertinggi', child: Text('Rating Tertinggi')),
+                ],
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.sort, size: 16, color: theme.colorScheme.primary),
+                      const SizedBox(width: 4),
+                      Text('Urut: $_sortBy', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: theme.colorScheme.primary)),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
 
           // Fish List
           if (filtered.isEmpty)
@@ -447,85 +524,10 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
               itemCount: filtered.length,
               itemBuilder: (ctx, idx) {
                 final fish = filtered[idx];
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  elevation: 2,
-                  color: Colors.white,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(16),
-                    onTap: () => _showFishDetailModal(fish),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Row(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.network(
-                              fish.imageUrl,
-                              width: 100,
-                              height: 100,
-                              fit: BoxFit.cover,
-                              errorBuilder: (c, e, s) => Container(
-                                width: 100,
-                                height: 100,
-                                color: Colors.blue.shade50,
-                                child: const Icon(Icons.set_meal, size: 40, color: Color(0xFF005B96)),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  fish.title,
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'Rp ${fish.pricePerKg.toStringAsFixed(0)} / Kg',
-                                  style: const TextStyle(
-                                    color: Color(0xFF005B96),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  'Nelayan: ${fish.fishermanName} (${fish.portLocation})',
-                                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                                ),
-                                const SizedBox(height: 6),
-                                Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFFE0F7FA),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: Text(
-                                        'Skor Kesegaran: ${fish.freshnessScore}%',
-                                        style: const TextStyle(fontSize: 10, color: Color(0xFF00A8CC), fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      'Stok: ${fish.stockKg} Kg',
-                                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Icon(Icons.chevron_right, color: Color(0xFF005B96)),
-                        ],
-                      ),
-                    ),
-                  ),
+                return ProductCard(
+                  fish: fish,
+                  store: widget.store,
+                  onTap: () => _showFishDetailModal(fish),
                 );
               },
             ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/netlayan_models.dart';
 import '../providers/netlayan_store.dart';
+import '../utils/format_rupiah.dart';
 import 'help_warranty_screen.dart';
 import 'review_submit_dialog.dart';
 
@@ -108,7 +109,7 @@ class OrderTrackingScreen extends StatelessWidget {
                   children: [
                     Text('Total Pembayaran:', style: TextStyle(color: Colors.grey.shade700)),
                     Text(
-                      'Rp ${order.grandTotal.toStringAsFixed(0)}',
+                      formatRupiah(order.grandTotal),
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF005B96)),
                     ),
                   ],

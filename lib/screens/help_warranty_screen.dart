@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/netlayan_models.dart';
 import '../providers/netlayan_store.dart';
+import '../utils/format_rupiah.dart';
 
 class HelpWarrantyScreen extends StatefulWidget {
   final NetlayanStore store;
@@ -239,7 +240,7 @@ class _HelpWarrantyScreenState extends State<HelpWarrantyScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Tanggal: ${comp.claimDate.day}/${comp.claimDate.month}/${comp.claimDate.year}', style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                          Text('Estimasi Refund: Rp ${comp.refundAmount.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green, fontSize: 13)),
+                          Text('Estimasi Refund: ${formatRupiah(comp.refundAmount)}', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green, fontSize: 13)),
                         ],
                       ),
                     ],

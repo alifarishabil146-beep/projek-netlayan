@@ -39,6 +39,7 @@ class FishItem {
   final double pricePerKg;
   double stockKg;
   final String imageUrl;
+  final String? imagePath;
   final DateTime catchDate;
   final String portLocation;
   final String description;
@@ -49,6 +50,10 @@ class FishItem {
   String fishingZone;
   DateTime unloadingDate;
   bool isVerifiedByTpi;
+  double rating;
+  bool isFavorite;
+  String estimatedArrival;
+  double shippingCost;
 
   FishItem({
     required this.id,
@@ -60,6 +65,7 @@ class FishItem {
     required this.pricePerKg,
     required this.stockKg,
     required this.imageUrl,
+    this.imagePath,
     required this.catchDate,
     required this.portLocation,
     required this.description,
@@ -70,6 +76,10 @@ class FishItem {
     this.fishingZone = 'Zona WPP-572 (Samudera Hindia)',
     DateTime? unloadingDate,
     this.isVerifiedByTpi = true,
+    this.rating = 4.8,
+    this.isFavorite = false,
+    this.estimatedArrival = 'Tiba besok',
+    this.shippingCost = 15000,
   }) : unloadingDate = unloadingDate ?? catchDate;
 
   String get catchHoursAgo {
@@ -82,10 +92,12 @@ class FishItem {
 class CartItem {
   final FishItem fish;
   double quantityKg;
+  bool isSelected;
 
   CartItem({
     required this.fish,
     required this.quantityKg,
+    this.isSelected = true,
   });
 
   double get totalPrice => fish.pricePerKg * quantityKg;
@@ -184,6 +196,7 @@ class RecipeModel {
   final String cookingTime;
   final String difficulty;
   final String imageUrl;
+  final String? imagePath;
   final String description;
   final List<String> ingredients;
   final List<String> steps;
@@ -197,6 +210,7 @@ class RecipeModel {
     required this.cookingTime,
     required this.difficulty,
     required this.imageUrl,
+    this.imagePath,
     required this.description,
     required this.ingredients,
     required this.steps,

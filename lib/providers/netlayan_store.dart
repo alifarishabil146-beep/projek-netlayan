@@ -187,6 +187,7 @@ class NetlayanStore extends ChangeNotifier {
         pricePerKg: 35000,
         stockKg: 120.0,
         imageUrl: 'https://images.unsplash.com/photo-1534483509719-3feaee7c30da?w=600&auto=format&fit=crop&q=80',
+        imagePath: 'assets/images/products/ikan_tongkol.jpg',
         catchDate: DateTime.now().subtract(const Duration(hours: 3)),
         portLocation: 'Pelabuhan Muara Padang',
         description: 'Ikan tongkol segar hasil tangkapan kapal KM Netlayan Utama di perairan Mentawai. Daging padat dan manis.',
@@ -202,6 +203,7 @@ class NetlayanStore extends ChangeNotifier {
         pricePerKg: 75000,
         stockKg: 45.0,
         imageUrl: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&auto=format&fit=crop&q=80',
+        imagePath: 'assets/images/products/ikan_kakap_merah.jpg',
         catchDate: DateTime.now().subtract(const Duration(hours: 4)),
         portLocation: 'Pelabuhan Bungus Padang',
         description: 'Kakap merah segar kualitas ekspor, sangat empuk untuk Gulai Kepala Kakap Khas Minang.',
@@ -217,6 +219,7 @@ class NetlayanStore extends ChangeNotifier {
         pricePerKg: 90000,
         stockKg: 30.0,
         imageUrl: 'https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=600&auto=format&fit=crop&q=80',
+        imagePath: 'assets/images/products/udang_vaname.jpg',
         catchDate: DateTime.now().subtract(const Duration(hours: 2)),
         portLocation: 'Dermaga Teluk Bayur',
         description: 'Udang vaname ukuran besar (size 30), kondisi sangat segar dan gurih manis.',
@@ -232,6 +235,7 @@ class NetlayanStore extends ChangeNotifier {
         pricePerKg: 65000,
         stockKg: 50.0,
         imageUrl: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=600&auto=format&fit=crop&q=80',
+        imagePath: 'assets/images/products/cumi_cumi.jpg',
         catchDate: DateTime.now().subtract(const Duration(hours: 5)),
         portLocation: 'Dermaga Teluk Bayur',
         description: 'Cumi segar tanpa bahan pengawet, kenyal dan gurih saat digoreng tepung crispy.',
@@ -247,6 +251,7 @@ class NetlayanStore extends ChangeNotifier {
         pricePerKg: 85000,
         stockKg: 200.0,
         imageUrl: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=600&auto=format&fit=crop&q=80',
+        imagePath: 'assets/images/products/ikan_tuna.jpg',
         catchDate: DateTime.now().subtract(const Duration(hours: 6)),
         portLocation: 'Pelabuhan Carocok Painan',
         description: 'Tuna segar kualitias sashimi, ditangkap dengan pancing ulur ramah lingkungan.',
@@ -263,7 +268,8 @@ class NetlayanStore extends ChangeNotifier {
         fishCategory: 'Ikan Laut',
         cookingTime: '35 Menit',
         difficulty: 'Mudah',
-        imageUrl: 'https://images.unsplash.com/photo-1534483509719-3feaee7c30da?w=600&auto=format&fit=crop&q=80',
+        imageUrl: 'https://images.unsplash.com/photo-1541544741938-0af808871cc0?w=600&auto=format&fit=crop&q=80',
+        imagePath: 'assets/images/recipes/asam_padeh_tongkol.jpg',
         description: 'Masakan khas Sumatera Barat dengan rasa gurih asam dan pedas rempah yang meresap sempurna ke serat daging ikan tongkol segar.',
         ingredients: [
           '1 Kg Ikan Tongkol Segar Tangkapan Subuh',
@@ -289,7 +295,8 @@ class NetlayanStore extends ChangeNotifier {
         fishCategory: 'Ikan Karang',
         cookingTime: '45 Menit',
         difficulty: 'Sedang',
-        imageUrl: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&auto=format&fit=crop&q=80',
+        imageUrl: 'https://images.unsplash.com/photo-1626500155142-2b0b5c119eab?w=600&auto=format&fit=crop&q=80',
+        imagePath: 'assets/images/recipes/gulai_kepala_kakap.jpg',
         description: 'Hidangan populer di Rumah Makan Padang, kepala kakap merah dengan kuah gulai kental beraroma jeruk purut dan ruku-ruku.',
         ingredients: [
           '1 Kg Ikan Kakap Merah Super segar',
@@ -314,6 +321,7 @@ class NetlayanStore extends ChangeNotifier {
         cookingTime: '20 Menit',
         difficulty: 'Sangat Mudah',
         imageUrl: 'https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=600&auto=format&fit=crop&q=80',
+        imagePath: 'assets/images/recipes/udang_balado_petai.jpg',
         description: 'Udang vaname segar rasa manis gurih alami ditumis cepat dengan sambal balado merah pedas dan aroma petai yang mantap.',
         ingredients: [
           '500g Udang Vaname Segar Laut',
@@ -336,7 +344,8 @@ class NetlayanStore extends ChangeNotifier {
         fishCategory: 'Udang & Cumi',
         cookingTime: '15 Menit',
         difficulty: 'Sangat Mudah',
-        imageUrl: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=600&auto=format&fit=crop&q=80',
+        imageUrl: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=600&auto=format&fit=crop&q=80',
+        imagePath: 'assets/images/recipes/cumi_goreng_tepung.jpg',
         description: 'Cumi cumi dipotong cincin dibalut tepung berbumbu gurih renyah, favorit anak-anak dan keluarga.',
         ingredients: [
           '500g Cumi-Cumi Segar Jarum',
@@ -547,6 +556,14 @@ class NetlayanStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  void toggleFavorite(String fishId) {
+    final idx = _fishList.indexWhere((f) => f.id == fishId);
+    if (idx >= 0) {
+      _fishList[idx].isFavorite = !_fishList[idx].isFavorite;
+      notifyListeners();
+    }
+  }
+
   void addFish(FishItem fish) {
     _fishList.insert(0, fish);
     notifyListeners();
@@ -572,9 +589,44 @@ class NetlayanStore extends ChangeNotifier {
     int existingIndex = _cart.indexWhere((item) => item.fish.id == fish.id);
     if (existingIndex >= 0) {
       _cart[existingIndex].quantityKg += quantityKg;
+      _cart[existingIndex].isSelected = true;
     } else {
-      _cart.add(CartItem(fish: fish, quantityKg: quantityKg));
+      _cart.add(CartItem(fish: fish, quantityKg: quantityKg, isSelected: true));
     }
+    notifyListeners();
+  }
+
+  bool get isAllCartSelected => _cart.isNotEmpty && _cart.every((item) => item.isSelected);
+  List<CartItem> get selectedCartItems => _cart.where((item) => item.isSelected).toList();
+  double get selectedCartTotalPrice => selectedCartItems.fold(0, (sum, item) => sum + item.totalPrice);
+  int get selectedCartCount => selectedCartItems.length;
+
+  void toggleCartItemSelection(String fishId) {
+    int index = _cart.indexWhere((item) => item.fish.id == fishId);
+    if (index >= 0) {
+      _cart[index].isSelected = !_cart[index].isSelected;
+      notifyListeners();
+    }
+  }
+
+  void toggleFishermanSelection(String fishermanId, bool isSelected) {
+    for (var item in _cart) {
+      if (item.fish.fishermanId == fishermanId) {
+        item.isSelected = isSelected;
+      }
+    }
+    notifyListeners();
+  }
+
+  void toggleSelectAllCart(bool isSelected) {
+    for (var item in _cart) {
+      item.isSelected = isSelected;
+    }
+    notifyListeners();
+  }
+
+  void removeSelectedCartItems() {
+    _cart.removeWhere((item) => item.isSelected);
     notifyListeners();
   }
 
@@ -608,9 +660,15 @@ class NetlayanStore extends ChangeNotifier {
     required String courierName,
     required double shippingFee,
     required String paymentMethod,
+    List<CartItem>? customItems,
   }) {
     final orderId = 'ORD-${DateTime.now().millisecondsSinceEpoch.toString().substring(5)}';
     final qrisPayload = '00020101021226680014ID.NETLAYAN.WWW0118${orderId}5204581253033605802ID5910NETLAYAN ID6006PADANG61052511162070703A0163044F8E';
+
+    final itemsToOrder = customItems ?? _cart;
+    final itemsTotal = customItems != null
+        ? customItems.fold(0.0, (sum, item) => sum + item.totalPrice)
+        : cartTotalPrice;
 
     final newOrder = OrderModel(
       id: orderId,
@@ -619,8 +677,8 @@ class NetlayanStore extends ChangeNotifier {
       buyerPhone: buyerPhone,
       buyerCity: buyerCity,
       deliveryAddress: deliveryAddress,
-      items: List.from(_cart),
-      itemsTotalPrice: cartTotalPrice,
+      items: List.from(itemsToOrder),
+      itemsTotalPrice: itemsTotal,
       shippingFee: shippingFee,
       courierName: courierName,
       paymentMethod: paymentMethod,
@@ -630,7 +688,9 @@ class NetlayanStore extends ChangeNotifier {
     );
 
     _orders.insert(0, newOrder);
-    _cart.clear();
+    if (customItems == null) {
+      _cart.clear();
+    }
     notifyListeners();
     return newOrder;
   }

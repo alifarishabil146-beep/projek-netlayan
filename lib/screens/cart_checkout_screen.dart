@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import '../models/netlayan_models.dart';
 import '../providers/netlayan_store.dart';
+import '../utils/format_rupiah.dart';
 
 class CartCheckoutScreen extends StatefulWidget {
   final NetlayanStore store;
+  final List<CartItem>? directItems; // Mode Beli Sekarang (1 produk langsung)
 
-  const CartCheckoutScreen({super.key, required this.store});
+  const CartCheckoutScreen({
+    super.key,
+    required this.store,
+    this.directItems,
+  });
 
   @override
   State<CartCheckoutScreen> createState() => _CartCheckoutScreenState();
@@ -18,6 +25,7 @@ class _CartCheckoutScreenState extends State<CartCheckoutScreen> {
   String _selectedCourier = 'Cold Chain Bus Express (Antar Kota Subuh)';
   double _shippingFee = 45000;
   String _selectedPaymentMethod = 'QRIS Instant Payment';
+  late List<CartItem> _checkoutItems;
 
   final List<String> _cities = [
     'Kota Padang',
@@ -39,6 +47,13 @@ class _CartCheckoutScreenState extends State<CartCheckoutScreen> {
     _addressCtrl.text = user?.address ?? 'Jl. Sudirman No. 45, Bukittinggi';
     _selectedCity = user?.city ?? 'Kota Bukittinggi';
     _updateShippingFee();
+
+    // Tentukan item yang akan di-checkout (Direct Buy Now atau dari Keranjang)
+    if (widget.directItems != null) {
+      _checkoutItems = List.from(widget.directItems!);
+    } else {
+      _checkoutItems = widget.store.cart;
+    }
   }
 
   void _updateShippingFee() {
@@ -72,6 +87,7 @@ class _CartCheckoutScreenState extends State<CartCheckoutScreen> {
       courierName: _selectedCourier,
       shippingFee: _shippingFee,
       paymentMethod: _selectedPaymentMethod,
+      customItems: widget.directItems != null ? _checkoutItems : null,
     );
 
     showDialog(
@@ -94,7 +110,7 @@ class _CartCheckoutScreenState extends State<CartCheckoutScreen> {
               Text('ID Pesanan: ${newOrder.id}', style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF005B96))),
               const SizedBox(height: 8),
               Text('Tujuan: ${newOrder.buyerCity}'),
-              Text('Total Pembayaran: Rp ${newOrder.grandTotal.toStringAsFixed(0)}'),
+              Text('Total Pembayaran: ${formatRupiah(newOrder.grandTotal)}'),
               const SizedBox(height: 12),
               if (_selectedPaymentMethod.contains('QRIS')) ...[
                 const Text('Silakan scan QRIS dibawah ini untuk pembayaran:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
@@ -142,20 +158,19 @@ class _CartCheckoutScreenState extends State<CartCheckoutScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Checkout & Pembayaran'),
+        title: Text(widget.directItems != null ? 'Beli Sekarang (Checkout)' : 'Checkout & Pembayaran'),
         backgroundColor: const Color(0xFF005B96),
         foregroundColor: Colors.white,
       ),
       body: AnimatedBuilder(
         animation: widget.store,
         builder: (context, _) {
-          final cartItems = widget.store.cart;
-          final itemsTotal = widget.store.cartTotalPrice;
+          final itemsTotal = _checkoutItems.fold(0.0, (sum, item) => sum + item.totalPrice);
           final grandTotal = itemsTotal + _shippingFee;
 
-          if (cartItems.isEmpty) {
+          if (_checkoutItems.isEmpty) {
             return const Center(
-              child: Text('Keranjang Anda kosong.'),
+              child: Text('Keranjang atau produk pesanan kosong.'),
             );
           }
 
@@ -165,26 +180,49 @@ class _CartCheckoutScreenState extends State<CartCheckoutScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Cart Items List
-                const Text('Rincian Ikan Dipesan', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF005B96))),
+                Text(
+                  widget.directItems != null ? 'Rincian Produk Dibeli' : 'Rincian Ikan di Keranjang',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF005B96)),
+                ),
                 const SizedBox(height: 10),
-                ...cartItems.map((item) {
+                ..._checkoutItems.map((item) {
                   return Card(
                     margin: const EdgeInsets.only(bottom: 10),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     child: ListTile(
                       title: Text(item.fish.title, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text('Rp ${item.fish.pricePerKg.toStringAsFixed(0)} / Kg • Tangkapan ${item.fish.fishermanName}'),
+                      subtitle: Text('${formatRupiah(item.fish.pricePerKg)} / Kg • Tangkapan ${item.fish.fishermanName}'),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
                             icon: const Icon(Icons.remove_circle_outline, size: 20, color: Color(0xFF005B96)),
-                            onPressed: () => widget.store.updateCartQuantity(item.fish.id, item.quantityKg - 1),
+                            onPressed: () {
+                              setState(() {
+                                if (widget.directItems != null) {
+                                  if (item.quantityKg > 1) {
+                                    item.quantityKg -= 1;
+                                  }
+                                } else {
+                                  widget.store.updateCartQuantity(item.fish.id, item.quantityKg - 1);
+                                }
+                              });
+                            },
                           ),
                           Text('${item.quantityKg.toStringAsFixed(0)} Kg', style: const TextStyle(fontWeight: FontWeight.bold)),
                           IconButton(
                             icon: const Icon(Icons.add_circle_outline, size: 20, color: Color(0xFF005B96)),
-                            onPressed: () => widget.store.updateCartQuantity(item.fish.id, item.quantityKg + 1),
+                            onPressed: () {
+                              setState(() {
+                                if (widget.directItems != null) {
+                                  if (item.quantityKg < item.fish.stockKg) {
+                                    item.quantityKg += 1;
+                                  }
+                                } else {
+                                  widget.store.updateCartQuantity(item.fish.id, item.quantityKg + 1);
+                                }
+                              });
+                            },
                           ),
                         ],
                       ),
@@ -258,7 +296,7 @@ class _CartCheckoutScreenState extends State<CartCheckoutScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(_selectedCourier, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF005B96))),
-                                    Text('Ongkir Cold Chain Boks Es: Rp ${_shippingFee.toStringAsFixed(0)}', style: const TextStyle(fontSize: 12)),
+                                    Text('Ongkir Cold Chain Boks Es: ${formatRupiah(_shippingFee)}', style: const TextStyle(fontSize: 12)),
                                   ],
                                 ),
                               ),
@@ -328,7 +366,7 @@ class _CartCheckoutScreenState extends State<CartCheckoutScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const Text('Subtotal Ikan:', style: TextStyle(color: Colors.white70)),
-                            Text('Rp ${itemsTotal.toStringAsFixed(0)}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                            Text(formatRupiah(itemsTotal), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                           ],
                         ),
                         const SizedBox(height: 4),
@@ -336,7 +374,7 @@ class _CartCheckoutScreenState extends State<CartCheckoutScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const Text('Ongkos Kirim Boks Es:', style: TextStyle(color: Colors.white70)),
-                            Text('Rp ${_shippingFee.toStringAsFixed(0)}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                            Text(formatRupiah(_shippingFee), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                           ],
                         ),
                         const Divider(color: Colors.white38, height: 16),
@@ -344,7 +382,7 @@ class _CartCheckoutScreenState extends State<CartCheckoutScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const Text('TOTAL BAYAR:', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                            Text('Rp ${grandTotal.toStringAsFixed(0)}', style: const TextStyle(color: Colors.yellowAccent, fontWeight: FontWeight.bold, fontSize: 20)),
+                            Text(formatRupiah(grandTotal), style: const TextStyle(color: Colors.yellowAccent, fontWeight: FontWeight.bold, fontSize: 20)),
                           ],
                         ),
                         const SizedBox(height: 16),
@@ -358,13 +396,13 @@ class _CartCheckoutScreenState extends State<CartCheckoutScreen> {
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             ),
                             onPressed: _processPayment,
-                            child: const Text('Buat Pesanan & Bayar Sekarang', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                            child: const Text('Bayar Sekarang & Kirim Pesanan', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                           ),
                         ),
                       ],
                     ),
                   ),
-                )
+                ),
               ],
             ),
           );

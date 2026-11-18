@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/netlayan_models.dart';
 import '../providers/netlayan_store.dart';
+import '../utils/format_rupiah.dart';
 import 'weather_navigation_screen.dart';
 
 class NelayanDashboard extends StatefulWidget {
@@ -105,7 +106,7 @@ class _NelayanDashboardState extends State<NelayanDashboard> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      'Batas Maksimal Harga Kemendag ($selectedCategory): Rp ${maxAllowed.toStringAsFixed(0)} / Kg',
+                      'Batas Maksimal Harga Kemendag ($selectedCategory): ${formatRupiah(maxAllowed)} / Kg',
                       style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey.shade700),
                     ),
                     const SizedBox(height: 12),
@@ -189,7 +190,7 @@ class _NelayanDashboardState extends State<NelayanDashboard> {
                                     ],
                                   ),
                                   content: Text(
-                                    'Harga yang Anda masukkan (Rp ${price.toStringAsFixed(0)}) melebihi Batas Harga Maksimal Kementerian Perdagangan untuk kategori "$selectedCategory" (Maksimal Rp ${maxAllowed.toStringAsFixed(0)} / Kg).\n\nNelayan dilarang menetapkan harga jual di atas ketentuan Kementerian Perdagangan. Silakan sesuaikan harga Anda.',
+                                    'Harga yang Anda masukkan (${formatRupiah(price)}) melebihi Batas Harga Maksimal Kementerian Perdagangan untuk kategori "$selectedCategory" (Maksimal ${formatRupiah(maxAllowed)} / Kg).\n\nNelayan dilarang menetapkan harga jual di atas ketentuan Kementerian Perdagangan. Silakan sesuaikan harga Anda.',
                                     style: const TextStyle(fontSize: 14),
                                   ),
                                   actions: [
@@ -555,7 +556,7 @@ class _NelayanDashboardState extends State<NelayanDashboard> {
                         children: [
                           Text(fish.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                           const SizedBox(height: 4),
-                          Text('Rp ${fish.pricePerKg.toStringAsFixed(0)} / Kg', style: const TextStyle(color: Color(0xFF005B96), fontWeight: FontWeight.bold, fontSize: 14)),
+                          Text('${formatRupiah(fish.pricePerKg)} / Kg', style: const TextStyle(color: Color(0xFF005B96), fontWeight: FontWeight.bold, fontSize: 14)),
                           const SizedBox(height: 2),
                           Text('Stok: ${fish.stockKg} Kg • ${fish.portLocation}', style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
                           const SizedBox(height: 4),
@@ -640,7 +641,7 @@ class _NelayanDashboardState extends State<NelayanDashboard> {
                       children: [
                         const Text('Penjualan Hari Ini', style: TextStyle(fontSize: 12, color: Colors.grey)),
                         const SizedBox(height: 6),
-                        Text('Rp ${store.totalDailyRevenue.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF005B96))),
+                        Text(formatRupiah(store.totalDailyRevenue), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF005B96))),
                       ],
                     ),
                   ),
@@ -657,7 +658,7 @@ class _NelayanDashboardState extends State<NelayanDashboard> {
                       children: [
                         const Text('Penjualan Minggu Ini', style: TextStyle(fontSize: 12, color: Colors.grey)),
                         const SizedBox(height: 6),
-                        Text('Rp ${store.totalWeeklyRevenue.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF005B96))),
+                        Text(formatRupiah(store.totalWeeklyRevenue), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF005B96))),
                       ],
                     ),
                   ),
@@ -680,7 +681,7 @@ class _NelayanDashboardState extends State<NelayanDashboard> {
                       children: [
                         const Text('Penjualan Bulan Ini', style: TextStyle(fontSize: 12, color: Colors.grey)),
                         const SizedBox(height: 6),
-                        Text('Rp ${store.totalMonthlyRevenue.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF005B96))),
+                        Text(formatRupiah(store.totalMonthlyRevenue), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF005B96))),
                       ],
                     ),
                   ),
@@ -697,7 +698,7 @@ class _NelayanDashboardState extends State<NelayanDashboard> {
                       children: [
                         const Text('Dana Sudah Cair', style: TextStyle(fontSize: 12, color: Colors.green)),
                         const SizedBox(height: 6),
-                        Text('Rp ${store.totalDisbursedFunds.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.green)),
+                        Text(formatRupiah(store.totalDisbursedFunds), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.green)),
                       ],
                     ),
                   ),
@@ -723,7 +724,7 @@ class _NelayanDashboardState extends State<NelayanDashboard> {
                       Text('Pesanan belum selesai / pengiriman', style: TextStyle(fontSize: 11, color: Colors.grey)),
                     ],
                   ),
-                  Text('Rp ${store.totalPendingFunds.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.orange)),
+                  Text(formatRupiah(store.totalPendingFunds), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.orange)),
                 ],
               ),
             ),
@@ -755,7 +756,7 @@ class _NelayanDashboardState extends State<NelayanDashboard> {
                 title: Text(rec.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                 subtitle: Text('${rec.category} • ${rec.date.day}/${rec.date.month}/${rec.date.year}', style: const TextStyle(fontSize: 12)),
                 trailing: Text(
-                  '${isIncome ? "+" : "-"}Rp ${rec.amount.toStringAsFixed(0)}',
+                  '${isIncome ? "+" : "-"}${formatRupiah(rec.amount)}',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: isIncome ? Colors.green : Colors.red,
@@ -778,7 +779,7 @@ class _NelayanDashboardState extends State<NelayanDashboard> {
                 title: Text('Pencairan Pesanan ${ord.id}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                 subtitle: Text('Pembeli: ${ord.buyerName} (${ord.buyerCity}) • Dana Cair', style: const TextStyle(fontSize: 12, color: Colors.green)),
                 trailing: Text(
-                  '+Rp ${ord.itemsTotalPrice.toStringAsFixed(0)}',
+                  '+${formatRupiah(ord.itemsTotalPrice)}',
                   style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green, fontSize: 14),
                 ),
               ),
@@ -895,7 +896,7 @@ class _NelayanDashboardState extends State<NelayanDashboard> {
                 leading: const Icon(Icons.warning, color: Colors.orange),
                 title: Text(comp.issueType, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                 subtitle: Text('Pembeli: ${comp.buyerName} • Status: ${comp.statusText}', style: const TextStyle(fontSize: 12)),
-                trailing: Text('-Rp ${comp.refundAmount.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
+                trailing: Text('-${formatRupiah(comp.refundAmount)}', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
               ),
             );
           }),
@@ -965,14 +966,14 @@ class _NelayanDashboardState extends State<NelayanDashboard> {
                 const Text('Item Pesanan:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                 ...order.items.map((item) => Padding(
                       padding: const EdgeInsets.symmetric(vertical: 2),
-                      child: Text('• ${item.fish.title} (${item.quantityKg} Kg) = Rp ${item.totalPrice.toStringAsFixed(0)}'),
+                      child: Text('• ${item.fish.title} (${item.quantityKg} Kg) = ${formatRupiah(item.totalPrice)}'),
                     )),
                 const SizedBox(height: 10),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Total: Rp ${order.grandTotal.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF005B96))),
+                    Text('Total: ${formatRupiah(order.grandTotal)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF005B96))),
                     Text('Pembayaran: ${order.paymentMethod}', style: const TextStyle(fontSize: 11, color: Colors.grey)),
                   ],
                 ),

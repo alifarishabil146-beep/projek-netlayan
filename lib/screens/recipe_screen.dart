@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/netlayan_models.dart';
 import '../providers/netlayan_store.dart';
+import '../utils/format_rupiah.dart';
+import '../widgets/netlayan_image.dart';
 
 class RecipeScreen extends StatelessWidget {
   final NetlayanStore store;
@@ -31,19 +33,13 @@ class RecipeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.network(
-                  recipe.imageUrl,
-                  height: 180,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (c, e, s) => Container(
-                    height: 180,
-                    color: Colors.pink.shade50,
-                    child: const Icon(Icons.restaurant_menu, size: 60, color: Color(0xFF005B96)),
-                  ),
-                ),
+              NetlayanImage(
+                imageUrl: recipe.imageUrl,
+                assetPath: recipe.imagePath,
+                width: double.infinity,
+                height: 180,
+                borderRadius: 16,
+                fallbackIcon: Icons.restaurant_menu,
               ),
               const SizedBox(height: 16),
 
@@ -52,15 +48,26 @@ class RecipeScreen extends StatelessWidget {
                 style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF005B96)),
               ),
               const SizedBox(height: 6),
-              Row(
+              Wrap(
+                spacing: 16,
+                runSpacing: 4,
                 children: [
-                  const Icon(Icons.timer, size: 16, color: Color(0xFF005B96)),
-                  const SizedBox(width: 4),
-                  Text(recipe.cookingTime, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                  const SizedBox(width: 16),
-                  const Icon(Icons.bar_chart, size: 16, color: Color(0xFF005B96)),
-                  const SizedBox(width: 4),
-                  Text('Tingkat: ${recipe.difficulty}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.timer, size: 16, color: Color(0xFF005B96)),
+                      const SizedBox(width: 4),
+                      Text(recipe.cookingTime, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    ],
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.bar_chart, size: 16, color: Color(0xFF005B96)),
+                      const SizedBox(width: 4),
+                      Text('Tingkat: ${recipe.difficulty}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    ],
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -148,7 +155,7 @@ class RecipeScreen extends StatelessWidget {
                     },
                     icon: const Icon(Icons.shopping_bag),
                     label: Text(
-                      'Beli ${matchingFish.title} Segar (Rp ${matchingFish.pricePerKg.toStringAsFixed(0)}/Kg)',
+                      'Beli ${matchingFish.title} Segar (${formatRupiah(matchingFish.pricePerKg)}/Kg)',
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                     ),
                   ),
@@ -194,7 +201,7 @@ class RecipeScreen extends StatelessWidget {
                     Icon(Icons.auto_awesome, color: Colors.yellowAccent, size: 24),
                     SizedBox(width: 8),
                     Text(
-                      'REKOMENDASI PINTAR TANGKAPAN SUBUS',
+                      'REKOMENDASI PINTAR TANGKAPAN SUBUH',
                       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
                     ),
                   ],
@@ -215,15 +222,13 @@ class RecipeScreen extends StatelessWidget {
                       padding: const EdgeInsets.all(12.0),
                       child: Row(
                         children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.network(
-                              smartFish.first.imageUrl,
-                              width: 80,
-                              height: 80,
-                              fit: BoxFit.cover,
-                              errorBuilder: (c, e, s) => Container(width: 80, height: 80, color: Colors.grey.shade300),
-                            ),
+                          NetlayanImage(
+                            imageUrl: smartFish.first.imageUrl,
+                            assetPath: smartFish.first.imagePath,
+                            width: 80,
+                            height: 80,
+                            borderRadius: 10,
+                            fallbackIcon: Icons.set_meal,
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -249,14 +254,19 @@ class RecipeScreen extends StatelessWidget {
                                 Text(
                                   smartFish.first.title,
                                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
-                                  'Rp ${smartFish.first.pricePerKg.toStringAsFixed(0)} / Kg • ${smartFish.first.catchHoursAgo}',
+                                  '${formatRupiah(smartFish.first.pricePerKg)} / Kg • ${smartFish.first.catchHoursAgo}',
                                   style: TextStyle(fontSize: 11, color: Colors.grey.shade700),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),
                           ),
+                          const SizedBox(width: 8),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF005B96),
@@ -306,20 +316,13 @@ class RecipeScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(12.0),
                   child: Row(
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          recipe.imageUrl,
-                          width: 95,
-                          height: 95,
-                          fit: BoxFit.cover,
-                          errorBuilder: (c, e, s) => Container(
-                            width: 95,
-                            height: 95,
-                            color: Colors.pink.shade50,
-                            child: const Icon(Icons.restaurant, size: 40, color: Color(0xFF005B96)),
-                          ),
-                        ),
+                      NetlayanImage(
+                        imageUrl: recipe.imageUrl,
+                        assetPath: recipe.imagePath,
+                        width: 95,
+                        height: 95,
+                        borderRadius: 12,
+                        fallbackIcon: Icons.restaurant,
                       ),
                       const SizedBox(width: 14),
                       Expanded(
@@ -329,22 +332,37 @@ class RecipeScreen extends StatelessWidget {
                             Text(
                               recipe.title,
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 4),
                             Text(
                               'Cocok untuk: ${recipe.targetFishName}',
                               style: const TextStyle(fontSize: 12, color: Color(0xFF005B96), fontWeight: FontWeight.bold),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 4),
-                            Row(
+                            Wrap(
+                              spacing: 10,
+                              runSpacing: 2,
                               children: [
-                                const Icon(Icons.timer, size: 14, color: Colors.grey),
-                                const SizedBox(width: 4),
-                                Text(recipe.cookingTime, style: const TextStyle(fontSize: 11, color: Colors.grey)),
-                                const SizedBox(width: 10),
-                                const Icon(Icons.auto_awesome, size: 14, color: Colors.orange),
-                                const SizedBox(width: 4),
-                                Text(recipe.difficulty, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.timer, size: 14, color: Colors.grey),
+                                    const SizedBox(width: 4),
+                                    Text(recipe.cookingTime, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.auto_awesome, size: 14, color: Colors.orange),
+                                    const SizedBox(width: 4),
+                                    Text(recipe.difficulty, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                                  ],
+                                ),
                               ],
                             ),
                           ],

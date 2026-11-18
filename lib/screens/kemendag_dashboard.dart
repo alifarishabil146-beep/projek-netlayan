@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/netlayan_models.dart';
 import '../providers/netlayan_store.dart';
+import '../utils/format_rupiah.dart';
 
 class KemendagDashboard extends StatefulWidget {
   final NetlayanStore store;
@@ -74,7 +75,7 @@ class _KemendagDashboardState extends State<KemendagDashboard> {
                 Navigator.pop(ctx);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Berhasil memperbarui ketentuan HET ${reg.category} menjadi Rp ${newPrice.toStringAsFixed(0)}'),
+                    content: Text('Berhasil memperbarui ketentuan HET ${reg.category} menjadi ${formatRupiah(newPrice)}'),
                     backgroundColor: const Color(0xFF005B96),
                   ),
                 );
@@ -356,7 +357,7 @@ class _KemendagDashboardState extends State<KemendagDashboard> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Batas Maksimal: Rp ${reg.maxPricePerKg.toStringAsFixed(0)} / Kg',
+                          'Batas Maksimal: ${formatRupiah(reg.maxPricePerKg)} / Kg',
                           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF005B96)),
                         ),
                         const SizedBox(height: 2),
@@ -456,14 +457,14 @@ class _KemendagDashboardState extends State<KemendagDashboard> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Harga Jual: Rp ${fish.pricePerKg.toStringAsFixed(0)} / Kg',
+                        'Harga Jual: ${formatRupiah(fish.pricePerKg)} / Kg',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: isExceeding ? Colors.red : const Color(0xFF005B96),
                         ),
                       ),
                       Text(
-                        'Batas Kemendag: Rp ${maxAllowed.toStringAsFixed(0)} / Kg',
+                        'Batas Kemendag: ${formatRupiah(maxAllowed)} / Kg',
                         style: TextStyle(fontSize: 13, color: Colors.grey.shade700, fontWeight: FontWeight.w500),
                       ),
                     ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'models/netlayan_models.dart';
 import 'providers/netlayan_store.dart';
 import 'screens/kemendag_dashboard.dart';
@@ -7,8 +8,11 @@ import 'screens/login_screen.dart';
 import 'screens/nelayan_dashboard.dart';
 import 'screens/pembeli_dashboard.dart';
 import 'screens/tpi_dashboard.dart';
+import 'theme/netlayan_theme.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('id_ID', null);
   runApp(const NetlayanApp());
 }
 
@@ -28,20 +32,7 @@ class _NetlayanAppState extends State<NetlayanApp> {
     return MaterialApp(
       title: 'NETLAYAN',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        primaryColor: const Color(0xFF005B96),
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF005B96),
-          primary: const Color(0xFF005B96),
-          secondary: const Color(0xFF00A8CC),
-        ),
-        scaffoldBackgroundColor: const Color(0xFFF4F8FA),
-        appBarTheme: const AppBarTheme(
-          centerTitle: false,
-          elevation: 0,
-        ),
-      ),
+      theme: NetlayanTheme.getThemeForRole(_store.currentUser?.role),
       home: AnimatedBuilder(
         animation: _store,
         builder: (context, _) {
@@ -107,4 +98,3 @@ class _NetlayanAppState extends State<NetlayanApp> {
     );
   }
 }
-
